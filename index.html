@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Test Lab Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2eff8f",
+                        "primary-hover": "#20b364",
+                        "background-dark": "#05100a", 
+                        "card-dark": "#101814",
+                        "border-green": "#273a30",
+                        "text-secondary": "#9abcaa",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(16, 24, 20, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(46, 255, 143, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-panel:hover {
+            border-color: rgba(46, 255, 143, 0.5);
+            box-shadow: 0 0 30px rgba(46, 255, 143, 0.15);
+            background: rgba(16, 24, 20, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        /* Neon Green Focus for search and settings boxes */
+        input:focus, select:focus, textarea:focus {
+            border-color: #2eff8f !important;
+            box-shadow: 0 0 15px rgba(46, 255, 143, 0.3) !important;
+            outline: none !important;
+            ring: none !important;
+        }
+
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #ffffff, #2eff8f);
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #05100a; }
+        ::-webkit-scrollbar-thumb { background: #1f352a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2eff8f; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0"
+  }
+}
+</script>
+</head>
+<body class="bg-background-dark text-white font-sans antialiased overflow-x-hidden selection:bg-primary selection:text-background-dark">
+    <div id="root"></div>
+</body>
+</html>
