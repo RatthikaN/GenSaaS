@@ -86,8 +86,8 @@ export const Logo = ({ className = "h-8", showText = true }: { className?: strin
     </div>
     {showText && (
       <div className="flex flex-col">
-        <span className="text-white text-lg font-black leading-none tracking-tight">Gien</span>
-        <span className="text-primary/60 text-[9px] font-black uppercase tracking-[0.2em] mt-0.5">Integrity Lab</span>
+        <span className="text-white text-lg font-black leading-none tracking-tight">GenSaaS</span>
+        <span className="text-primary/60 text-[9px] font-black uppercase tracking-[0.2em] mt-0.5">Test Lab</span>
       </div>
     )}
   </div>
