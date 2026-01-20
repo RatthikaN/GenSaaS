@@ -3,7 +3,6 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-    base: "/testlab/",
   plugins: [react()],
   define: {
     // Standard way to shim process for browser-based libraries like @google/genai

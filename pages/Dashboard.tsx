@@ -2,92 +2,137 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { UserRole } from '../types.ts';
 
-const CreateProjectModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
-  const [files, setFiles] = useState<File[]>([]);
-  const [projectName, setProjectName] = useState('');
-  const [appCategory, setAppCategory] = useState<'Web' | 'Mobile' | 'Software'>('Web');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+const AuditInitializationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+  const [auditName, setAuditName] = useState('');
+  const [description, setDescription] = useState('');
+  const [maxSize, setMaxSize] = useState(500); // MB
+  const [folderCount, setFolderCount] = useState(0);
+  const [fileCount, setFileCount] = useState(0);
+  const [isInitializing, setIsInitializing] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(prev => [...prev, ...Array.from(e.target.files!)]);
-    }
+  const handleInitialize = () => {
+    setIsInitializing(true);
+    setTimeout(() => {
+      setIsInitializing(false);
+      onClose();
+    }, 2000);
   };
-
-  const categories = [
-    { id: 'Web', label: 'Web', icon: 'cloud' },
-    { id: 'Mobile', label: 'Mobile', icon: 'smartphone' },
-    { id: 'Software', label: 'Software', icon: 'desktop_windows' },
-  ] as const;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="glass-panel w-full max-w-lg rounded-3xl p-6 md:p-8 relative overflow-hidden flex flex-col gap-6 animate-in fade-in zoom-in duration-200 max-h-[95vh] overflow-y-auto">
-        <div className="flex justify-between items-center">
-          <h3 className="text-xl font-bold text-white">Create New Project</h3>
-          <button onClick={onClose} className="text-text-secondary hover:text-white">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-xl animate-fade-in" onClick={onClose}></div>
+      <div className="glass-panel w-full max-w-xl rounded-[2.5rem] p-6 md:p-10 relative overflow-hidden flex flex-col gap-8 animate-in fade-in zoom-in duration-300 max-h-[95vh] overflow-y-auto border-primary/20 shadow-[0_0_50px_rgba(46,255,143,0.1)]">
+        
+        {/* Decorative Background Header */}
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none"></div>
+
+        <div className="flex justify-between items-start relative z-10">
+          <div className="space-y-1">
+            <h3 className="text-2xl font-black text-white uppercase tracking-tight">Initialize Audit</h3>
+            <p className="text-text-secondary text-xs font-medium uppercase tracking-widest">System Integrity Configuration</p>
+          </div>
+          <button onClick={onClose} className="size-10 rounded-xl bg-white/5 hover:bg-white/10 text-text-secondary hover:text-white transition-all flex items-center justify-center">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
         
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Project Name</label>
-            <input 
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" 
-              placeholder="e.g. Finance Analyzer Alpha"
-            />
-          </div>
-
-          <div className="space-y-3">
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Application Category</label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setAppCategory(cat.id)}
-                  className={`flex flex-row sm:flex-col items-center justify-center gap-3 sm:gap-2 p-4 rounded-2xl border transition-all ${
-                    appCategory === cat.id 
-                    ? 'bg-primary/10 border-primary text-primary shadow-[0_0_15px_rgba(46,255,143,0.15)]' 
-                    : 'bg-white/5 border-white/10 text-text-secondary hover:border-white/20'
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-2xl">{cat.icon}</span>
-                  <span className="text-xs font-bold">{cat.label}</span>
-                </button>
-              ))}
+        <div className="space-y-8 relative z-10">
+          {/* Identity Section */}
+          <div className="grid grid-cols-1 gap-5">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-primary uppercase tracking-[0.2em] px-1">Audit Session Name</label>
+              <input 
+                value={auditName}
+                onChange={(e) => setAuditName(e.target.value)}
+                className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm focus:border-primary transition-all outline-none placeholder:text-white/20" 
+                placeholder="e.g. Q4 Infrastructure Compliance"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-primary uppercase tracking-[0.2em] px-1">Scope Description</label>
+              <textarea 
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm focus:border-primary transition-all outline-none resize-none placeholder:text-white/20" 
+                placeholder="Describe the target assets and compliance goals..."
+              />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Dataset Upload</label>
-            <div 
-              onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-white/10 hover:border-primary/40 hover:bg-primary/5 transition-all rounded-2xl p-6 flex flex-col items-center justify-center gap-3 cursor-pointer group"
-            >
-              <input type="file" multiple className="hidden" ref={fileInputRef} onChange={handleFileChange} />
-              <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-2xl">cloud_upload</span>
+          {/* Size Constraint Section */}
+          <div className="space-y-4 p-6 rounded-3xl bg-white/5 border border-white/10">
+            <div className="flex justify-between items-end">
+               <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">Max Allowed Workspace Size</label>
+               <div className="text-right">
+                  <span className="text-2xl font-black text-primary">{maxSize}</span>
+                  <span className="text-[10px] font-black text-primary uppercase ml-1">MB</span>
+               </div>
+            </div>
+            <input 
+              type="range" 
+              min="10" 
+              max="5000" 
+              step="10"
+              value={maxSize}
+              onChange={(e) => setMaxSize(parseInt(e.target.value))}
+              className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
+            />
+            <div className="flex justify-between text-[8px] font-black text-white/30 uppercase tracking-widest">
+               <span>10 MB</span>
+               <span>5,000 MB (Enterprise Max)</span>
+            </div>
+          </div>
+
+          {/* Structural Metrics */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="glass-panel p-5 rounded-3xl border-white/10 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-lg">folder_open</span>
+                <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">Total Folders</span>
               </div>
-              <div className="text-center">
-                <p className="text-sm font-bold text-white">Upload test files</p>
-                <p className="text-[10px] text-text-secondary mt-1 uppercase tracking-tight">CSV, JSON, PDF</p>
+              <input 
+                type="number"
+                value={folderCount || ''}
+                onChange={(e) => setFolderCount(parseInt(e.target.value) || 0)}
+                className="w-full bg-transparent text-2xl font-black text-white outline-none border-b border-white/5 focus:border-primary transition-all pb-1"
+                placeholder="0"
+              />
+            </div>
+            <div className="glass-panel p-5 rounded-3xl border-white/10 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-lg">description</span>
+                <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">Total Files</span>
               </div>
+              <input 
+                type="number"
+                value={fileCount || ''}
+                onChange={(e) => setFileCount(parseInt(e.target.value) || 0)}
+                className="w-full bg-transparent text-2xl font-black text-white outline-none border-b border-white/5 focus:border-primary transition-all pb-1"
+                placeholder="0"
+              />
             </div>
           </div>
         </div>
 
         <button 
-          disabled={!projectName || files.length === 0}
-          className="w-full py-4 rounded-xl bg-primary hover:bg-primary-hover text-background-dark font-black text-sm shadow-lg disabled:opacity-50 transition-all mt-2"
-          onClick={onClose}
+          onClick={handleInitialize}
+          disabled={!auditName || isInitializing}
+          className="w-full py-5 rounded-2xl bg-primary hover:bg-primary-hover text-background-dark font-black text-sm uppercase tracking-[0.2em] shadow-[0_20px_40px_rgba(46,255,143,0.2)] disabled:opacity-50 transition-all flex items-center justify-center gap-3 active:scale-95"
         >
-          Initialize Infrastructure
+          {isInitializing ? (
+            <>
+              <span className="size-4 border-2 border-background-dark/30 border-t-background-dark rounded-full animate-spin"></span>
+              Synchronizing Agent...
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined font-black">shield_with_heart</span>
+              Initialize Integrity Audit
+            </>
+          )}
         </button>
       </div>
     </div>
@@ -141,17 +186,17 @@ const Dashboard = ({ role }: { role: UserRole }) => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-white text-xl md:text-3xl font-black tracking-tight uppercase">Dashboard Control</h1>
-          <p className="text-text-secondary text-[11px] md:text-sm font-medium">Global AI Testing Infrastructure • Oct 24, 2023</p>
+          <p className="text-text-secondary text-[11px] md:text-sm font-medium uppercase tracking-widest">Global Integrity Infrastructure • Oct 24, 2023</p>
         </div>
         <div className="grid grid-cols-2 md:flex md:flex-row gap-3 w-full md:w-auto">
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center px-4 h-11 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs md:text-sm font-bold border border-white/10 transition-colors"
+            className="flex items-center justify-center px-4 h-12 rounded-2xl bg-white/5 hover:bg-white/10 text-white text-xs md:text-sm font-bold border border-white/10 transition-all active:scale-95"
           >
             <span className="material-symbols-outlined mr-2 text-[18px]">add_circle</span>
-            <span className="whitespace-nowrap">Create Project</span>
+            <span className="whitespace-nowrap">Configure Audit</span>
           </button>
-          <button className="flex items-center justify-center px-4 md:px-6 h-11 rounded-xl bg-primary hover:bg-primary-hover text-background-dark text-xs md:text-sm font-black shadow-[0_0_15px_rgba(46,255,143,0.3)] transition-all">
+          <button className="flex items-center justify-center px-4 md:px-6 h-12 rounded-2xl bg-primary hover:bg-primary-hover text-background-dark text-xs md:text-sm font-black shadow-[0_0_15px_rgba(46,255,143,0.3)] transition-all active:scale-95">
             <span className="material-symbols-outlined mr-2 text-[20px]">play_arrow</span>
             <span className="whitespace-nowrap">New Test Run</span>
           </button>
@@ -283,7 +328,7 @@ const Dashboard = ({ role }: { role: UserRole }) => {
         </div>
       </div>
 
-      <CreateProjectModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AuditInitializationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };
