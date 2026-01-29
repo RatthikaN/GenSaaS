@@ -40,7 +40,7 @@ const CertificatePage = () => {
               className="px-6 py-2.5 rounded-xl bg-primary text-background-dark font-bold text-sm shadow-lg hover:bg-primary-hover transition-all flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-xl">share</span>
-              Share Verification
+              Share Certificate
             </button>
           </div>
         </div>

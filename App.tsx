@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { HashRouter, Routes, Route, Link, useLocation, Navigate, NavLink } from 'react-router-dom';
 import LandingPage from './pages/LandingPage.tsx';
 import LoginPage from './pages/LoginPage.tsx';
@@ -11,6 +11,7 @@ import AuditReportPage from './pages/AuditReportPage.tsx';
 import TestExecutionPage from './pages/TestExecutionPage.tsx';
 import CreditDashboard from './pages/CreditDashboard.tsx';
 import FixWorkspacePage from './pages/FixWorkspacePage.tsx';
+import BuildPage from './pages/BuildPage.tsx';
 import CertificatePage from './pages/CertificatePage.tsx';
 import MembersPage from './pages/MembersPage.tsx';
 import SettingsLayout from './pages/Settings/SettingsLayout.tsx';
@@ -19,6 +20,7 @@ import AccountPage from './pages/Settings/AccountPage.tsx';
 import SubscriptionPage from './pages/Settings/SubscriptionPage.tsx';
 import SecurityPage from './pages/Settings/SecurityPage.tsx';
 import NotificationsPage from './pages/Settings/NotificationsPage.tsx';
+import CommunityHub from './pages/CommunityHub.tsx';
 import { UserRole } from './types.ts';
 
 export const RobotScanningIcon = ({ className = "size-full" }: { className?: string }) => (
@@ -67,15 +69,14 @@ export const RobotScanningIcon = ({ className = "size-full" }: { className?: str
 export const Logo = ({ className = "h-8", showText = true }: { className?: string, showText?: boolean }) => (
   <div className={`flex items-center gap-3 ${className}`}>
     <div className="relative group">
-      <div className="size-10 md:size-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-[0_0_20px_rgba(46,255,143,0.15)] group-hover:shadow-[0_0_30px_rgba(46,255,143,0.3)] transition-all duration-500 overflow-hidden">
+      <div className="size-9 md:size-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-[0_0_20px_rgba(46,255,143,0.15)] group-hover:shadow-[0_0_30px_rgba(46,255,143,0.3)] transition-all duration-500 overflow-hidden">
         <RobotScanningIcon />
       </div>
-      <div className="absolute -inset-1 bg-primary/20 rounded-xl blur-lg opacity-0 group-hover:opacity-40 transition-opacity pointer-events-none"></div>
     </div>
     {showText && (
       <div className="flex flex-col">
-        <span className="text-white text-lg font-black leading-none tracking-tight">Gien</span>
-        <span className="text-primary/60 text-[9px] font-black uppercase tracking-[0.2em] mt-0.5">Integrity Lab</span>
+        <span className="text-white text-base md:text-lg font-black leading-none tracking-tight">GenSaaS</span>
+        <span className="text-primary/60 text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] mt-0.5">Test Lab</span>
       </div>
     )}
   </div>
@@ -83,24 +84,24 @@ export const Logo = ({ className = "h-8", showText = true }: { className?: strin
 
 const EcosystemNav = () => {
   const platforms = [
-    { name: 'Build Studio', icon: 'construction', path: '/build', color: 'text-[#2eff8f]' },
-    { name: 'Test studio', icon: 'biotech', path: '/hub', color: 'text-[#60a5fa]' },
-    { name: 'community', icon: 'groups', path: '/community', color: 'text-[#fbbf24]' },
-    { name: 'Market Place', icon: 'storefront', path: '/marketplace', color: 'text-[#2dd4bf]' },
+    { name: 'Hub', icon: 'hub', path: '/dashboard', color: 'text-[#60a5fa]' },
+    { name: 'Build', icon: 'handyman', path: '/build', color: 'text-[#f59e0b]' },
+    { name: 'Community', icon: 'diversity_3', path: '/hub', color: 'text-[#f472b6]' },
+    { name: 'Market', icon: 'storefront', path: '/marketplace', color: 'text-[#2dd4bf]' },
   ];
 
   return (
-    <div className="flex items-center gap-1.5 p-1 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl">
+    <div className="flex items-center gap-1 md:gap-1.5 p-1 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-xl md:rounded-2xl shadow-2xl">
       {platforms.map((platform) => (
         <Link
           key={platform.name}
           to={platform.path}
-          className="group flex items-center gap-0 hover:gap-3 px-3 py-2 rounded-xl transition-all duration-500 hover:bg-white/10 border border-transparent hover:border-white/10"
+          className="group flex items-center gap-0 hover:gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-lg md:rounded-xl transition-all duration-500 hover:bg-white/10"
         >
-          <span className={`material-symbols-outlined text-[18px] md:text-[20px] ${platform.color} transition-colors duration-300`}>
+          <span className={`material-symbols-outlined text-[16px] md:text-[20px] ${platform.color} transition-colors duration-300`}>
             {platform.icon}
           </span>
-          <span className="max-w-0 overflow-hidden whitespace-nowrap text-[10px] md:text-[11px] font-black uppercase tracking-widest text-white transition-all duration-500 ease-in-out group-hover:max-w-[150px]">
+          <span className="max-w-0 overflow-hidden whitespace-nowrap text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white transition-all duration-500 ease-in-out group-hover:max-w-[100px]">
             {platform.name}
           </span>
         </Link>
@@ -116,137 +117,182 @@ const SidebarContent = ({ currentRole, closeMenu }: { currentRole: UserRole, clo
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: 'dashboard', roles: [UserRole.TEST_LAB, UserRole.SELLER, UserRole.CUSTOMER] },
-    { name: 'Audit', path: '/projects', icon: 'layers', roles: [UserRole.TEST_LAB, UserRole.SELLER] },
-    { name: 'Certificate', path: '/audit', icon: 'workspace_premium', roles: [UserRole.TEST_LAB] },
+    { name: 'Projects', path: '/projects', icon: 'layers', roles: [UserRole.TEST_LAB, UserRole.SELLER] },
+    { name: 'Certificates', path: '/audit', icon: 'workspace_premium', roles: [UserRole.TEST_LAB] },
     { name: 'Members', path: '/members', icon: 'group', roles: [UserRole.TEST_LAB] },
   ];
 
   const settingsSubItems = [
     { name: 'Profile', path: '/settings/profile', icon: 'person' },
     { name: 'Account', path: '/settings/account', icon: 'account_balance' },
-    { name: 'Subscription', path: '/settings/subscription', icon: 'credit_card' },
+    { name: 'Credits', path: '/credits', icon: 'bolt' },
     { name: 'Security', path: '/settings/security', icon: 'security' },
-    { name: 'Notifications', path: '/settings/notifications', icon: 'notifications' },
   ];
 
   const filteredItems = navItems.filter(item => item.roles.includes(currentRole));
 
   return (
-    <div className="p-6 flex flex-col h-full justify-between overflow-y-auto">
+    <div className="p-5 flex flex-col h-full justify-between overflow-y-auto custom-scrollbar">
       <div className="flex flex-col gap-8">
-        <Link to="/" onClick={closeMenu}>
+        <Link to="/" onClick={closeMenu} className="px-2">
           <Logo />
         </Link>
-        <div className="space-y-4">
-          <div className="flex flex-col gap-1">
-            {filteredItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={closeMenu}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all group ${
-                  isActive(item.path)
-                    ? 'bg-primary/15 text-primary border border-primary/20 shadow-[0_0_20px_rgba(46,255,143,0.1)]'
-                    : 'text-[#9cbaaa]/70 hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                <span className={`material-symbols-outlined text-[20px] ${isActive(item.path) ? 'fill-1' : ''}`}>
-                  {item.icon}
+        <nav className="space-y-1">
+          {filteredItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={closeMenu}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all group ${
+                isActive(item.path)
+                  ? 'bg-primary/15 text-primary border border-primary/20 shadow-[0_0_15px_rgba(46,255,143,0.1)]'
+                  : 'text-[#9cbaaa]/70 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              <span className={`material-symbols-outlined text-[20px] ${isActive(item.path) ? 'fill-1' : ''}`}>
+                {item.icon}
+              </span>
+              <span className="text-[10px] md:text-[11px] font-black uppercase tracking-wider">{item.name}</span>
+            </Link>
+          ))}
+          <div className="mt-1">
+            <button
+              onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all group ${
+                location.pathname.startsWith('/settings')
+                  ? 'bg-primary/10 text-primary border border-primary/20'
+                  : 'text-[#9cbaaa]/70 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className={`material-symbols-outlined text-[20px] ${location.pathname.startsWith('/settings') ? 'fill-1' : ''}`}>
+                  settings
                 </span>
-                <span className="text-[11px] font-black uppercase tracking-wider">{item.name}</span>
-              </Link>
-            ))}
-            <div className="mt-1">
-              <button
-                onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all group ${
-                  location.pathname.startsWith('/settings')
-                    ? 'bg-primary/10 text-primary border border-primary/20'
-                    : 'text-[#9cbaaa]/70 hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={`material-symbols-outlined text-[20px] ${location.pathname.startsWith('/settings') ? 'fill-1' : ''}`}>
-                    settings
-                  </span>
-                  <span className="text-[11px] font-black uppercase tracking-wider">Settings</span>
-                </div>
-                <span className={`material-symbols-outlined text-[18px] transition-transform duration-300 ${isSettingsExpanded ? 'rotate-180' : ''}`}>
-                  expand_more
-                </span>
-              </button>
-              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isSettingsExpanded ? 'max-h-[300px] opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
-                <div className="pl-6 flex flex-col gap-0.5 border-l border-white/5 ml-6">
-                  {settingsSubItems.map((sub) => (
-                    <Link
-                      key={sub.path}
-                      to={sub.path}
-                      onClick={closeMenu}
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all border border-transparent ${
-                        location.pathname === sub.path
-                          ? 'text-primary bg-primary/5 border-primary/10'
-                          : 'text-[#9cbaaa]/50 hover:text-white hover:bg-white/5'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-[16px]">{sub.icon}</span>
-                      {sub.name}
-                    </Link>
-                  ))}
-                </div>
+                <span className="text-[10px] md:text-[11px] font-black uppercase tracking-wider">Settings</span>
+              </div>
+              <span className={`material-symbols-outlined text-[18px] transition-transform duration-300 ${isSettingsExpanded ? 'rotate-180' : ''}`}>
+                expand_more
+              </span>
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isSettingsExpanded ? 'max-h-[300px] opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+              <div className="pl-6 flex flex-col gap-0.5 border-l border-white/5 ml-6">
+                {settingsSubItems.map((sub) => (
+                  <Link
+                    key={sub.path}
+                    to={sub.path}
+                    onClick={closeMenu}
+                    className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all border border-transparent ${
+                      isActive(sub.path)
+                        ? 'text-primary bg-primary/5 border-primary/10'
+                        : 'text-[#9cbaaa]/50 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">{sub.icon}</span>
+                    {sub.name}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="pt-4 border-t border-white/5 mt-auto">
-        <div className="flex items-center gap-3 px-3 py-2 bg-white/5 rounded-xl border border-white/5 group hover:border-primary/20 transition-all cursor-pointer">
-          <div className="size-8 rounded-full bg-slate-700 flex items-center justify-center border border-white/10 overflow-hidden shrink-0">
-             <img src="https://picsum.photos/seed/user/32/32" alt="User" />
-          </div>
-          <div className="flex flex-col overflow-hidden">
-            <span className="text-white text-[10px] font-black uppercase truncate">Alex Morgan</span>
-            <span className="text-primary text-[8px] uppercase font-black tracking-[0.1em]">Enterprise Plan</span>
-          </div>
-        </div>
+        </nav>
       </div>
     </div>
   );
 };
 
-const WorkspaceHeader = ({ onMobileMenuToggle }: { onMobileMenuToggle: () => void }) => (
-  <header className="sticky top-0 z-[40] w-full bg-background-dark/40 backdrop-blur-xl border-b border-white/5 h-16 md:h-20 flex items-center px-4 md:px-8 justify-between shadow-xl">
-    <div className="flex items-center gap-3">
-      <button 
-        onClick={onMobileMenuToggle}
-        className="lg:hidden size-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform"
-      >
-        <span className="material-symbols-outlined">menu</span>
-      </button>
-      <Link to="/" className="flex lg:hidden">
-        <Logo className="h-6" showText={false} />
-      </Link>
-    </div>
-    <div className="flex items-center gap-4 md:gap-6">
-      <EcosystemNav />
-      <div className="hidden md:flex items-center gap-4 pl-6 border-l border-white/10">
-        <button className="relative size-10 flex items-center justify-center text-white/40 hover:text-primary transition-all group">
-          <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">notifications</span>
-          <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-2 ring-background-dark animate-pulse"></span>
+const WorkspaceHeader = ({ onMobileMenuToggle }: { onMobileMenuToggle: () => void }) => {
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <header className="sticky top-0 z-[40] w-full bg-background-dark/60 backdrop-blur-xl border-b border-white/5 h-16 md:h-20 flex items-center px-4 md:px-8 justify-between shadow-xl">
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={onMobileMenuToggle}
+          className="lg:hidden size-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform"
+        >
+          <span className="material-symbols-outlined text-[20px]">menu</span>
         </button>
-        <div className="h-10 w-[1px] bg-white/10 mx-2"></div>
-        <div className="flex items-center gap-3">
-          <div className="flex flex-col items-end">
-            <span className="text-white text-[10px] font-black uppercase tracking-tight">Alex Morgan</span>
-            <span className="text-primary text-[8px] font-black uppercase tracking-[0.2em] mt-0.5">Store Owner</span>
-          </div>
-          <div className="size-11 rounded-xl bg-slate-700 border border-white/10 overflow-hidden shrink-0 shadow-lg group hover:border-primary/40 transition-all cursor-pointer">
-             <img src="https://picsum.photos/seed/user/44/44" alt="User" className="w-full h-full object-cover" />
+        <Link to="/" className="flex lg:hidden">
+          <Logo className="h-6" showText={false} />
+        </Link>
+      </div>
+      <div className="flex items-center gap-3 md:gap-6">
+        <EcosystemNav />
+        <div className="hidden sm:flex items-center gap-4 pl-4 md:pl-6 border-l border-white/10 relative" ref={menuRef}>
+          <button className="relative size-10 flex items-center justify-center text-white/40 hover:text-primary transition-all group">
+            <span className="material-symbols-outlined text-[22px] md:text-2xl group-hover:scale-110 transition-transform">notifications</span>
+            <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-2 ring-background-dark animate-pulse"></span>
+          </button>
+          
+          <div className="relative">
+            <button 
+              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+              className="size-10 rounded-xl bg-slate-700 border border-white/10 overflow-hidden shrink-0 shadow-lg group hover:border-primary/40 transition-all cursor-pointer active:scale-95"
+            >
+               <img src="https://picsum.photos/seed/user/44/44" alt="User" className="w-full h-full object-cover" />
+            </button>
+
+            {/* Profile Settings Dropdown */}
+            {isProfileMenuOpen && (
+              <div className="absolute top-full right-0 mt-3 w-56 glass-panel rounded-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-2 animate-fade-in overflow-hidden z-50">
+                <div className="px-4 py-3 border-b border-white/5 mb-1">
+                  <p className="text-white text-[11px] font-black uppercase tracking-wider">Alex Morgan</p>
+                  <p className="text-primary text-[9px] font-black uppercase tracking-[0.15em] mt-0.5">Administrator</p>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <Link 
+                    to="/settings/profile" 
+                    onClick={() => setIsProfileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase text-[#9cbaaa]/70 hover:bg-white/5 hover:text-white transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">person</span>
+                    Profile Settings
+                  </Link>
+                  <Link 
+                    to="/settings/security" 
+                    onClick={() => setIsProfileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase text-[#9cbaaa]/70 hover:bg-white/5 hover:text-white transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">security</span>
+                    Security
+                  </Link>
+                  <Link 
+                    to="/credits" 
+                    onClick={() => setIsProfileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase text-[#9cbaaa]/70 hover:bg-white/5 hover:text-white transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">bolt</span>
+                    Credits
+                  </Link>
+                  <div className="h-px bg-white/5 my-1" />
+                  <Link 
+                    to="/login" 
+                    onClick={() => setIsProfileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase text-red-400/70 hover:bg-red-500/10 hover:text-red-400 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">logout</span>
+                    Sign Out
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
-  </header>
-);
+    </header>
+  );
+};
 
 const SettingsIncompleteAlert = () => {
   const [isDismissed, setIsDismissed] = useState(false);
@@ -255,21 +301,20 @@ const SettingsIncompleteAlert = () => {
   if (isDismissed || isSettingsPage) return null;
 
   return (
-    <div className="bg-yellow-500/10 backdrop-blur-md border-b border-yellow-500/20 px-4 py-2.5 flex items-center justify-between animate-fade-in z-[30]">
-      <div className="flex items-center gap-3">
-        <div className="size-7 rounded-lg bg-yellow-500/20 flex items-center justify-center text-yellow-500">
-          <span className="material-symbols-outlined text-lg">priority_high</span>
+    <div className="bg-yellow-500/10 backdrop-blur-md border-b border-yellow-500/20 px-4 py-2 flex items-center justify-between animate-fade-in z-[30]">
+      <div className="flex items-center gap-2 md:gap-3">
+        <div className="size-6 md:size-7 rounded-lg bg-yellow-500/20 flex items-center justify-center text-yellow-500">
+          <span className="material-symbols-outlined text-sm md:text-lg font-bold">priority_high</span>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-           <span className="text-[10px] font-black text-white uppercase tracking-wider">Laboratory Setup Incomplete</span>
-           <span className="hidden sm:block text-white/20">|</span>
-           <p className="text-[9px] text-text-secondary font-black uppercase tracking-tight">Your audit profile and security layers are missing critical data.</p>
-        </div>
+        <p className="text-[8px] md:text-[10px] text-white/90 font-black uppercase tracking-wider">
+          Laboratory Setup Incomplete <span className="hidden sm:inline opacity-40 mx-2">|</span> 
+          <span className="hidden sm:inline text-text-secondary">Your audit profile and security layers are missing critical data.</span>
+        </p>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         <Link 
           to="/settings/profile" 
-          className="px-4 py-1.5 rounded-lg bg-yellow-500 text-background-dark text-[10px] font-black uppercase tracking-widest hover:bg-yellow-400 transition-all shadow-[0_0_15px_rgba(234,179,8,0.3)]"
+          className="px-3 py-1.5 rounded-lg bg-yellow-500 text-background-dark text-[8px] md:text-[10px] font-black uppercase tracking-widest hover:bg-yellow-400 transition-all"
         >
           Complete Setup
         </Link>
@@ -285,7 +330,7 @@ const Layout = ({ currentRole, children }: { currentRole: UserRole, children?: R
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const noHeaderRoutes = ['/', '/login', '/signup'];
-  const hasWorkspaceHeader = !noHeaderRoutes.includes(location.pathname);
+  const isLandingOrLogin = noHeaderRoutes.includes(location.pathname);
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -293,7 +338,7 @@ const Layout = ({ currentRole, children }: { currentRole: UserRole, children?: R
 
   return (
     <div className="flex min-h-screen">
-      {hasWorkspaceHeader && (
+      {!isLandingOrLogin && (
         <>
           <aside className="w-64 hidden lg:flex flex-col border-r border-white/5 bg-background-dark/20 backdrop-blur-xl h-screen sticky top-0 shrink-0 z-[50]">
             <SidebarContent currentRole={currentRole} />
@@ -301,19 +346,19 @@ const Layout = ({ currentRole, children }: { currentRole: UserRole, children?: R
           {isMobileMenuOpen && (
             <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />
           )}
-          <aside className={`fixed top-0 left-0 bottom-0 w-72 bg-background-dark/80 backdrop-blur-xl border-r border-white/5 z-[70] lg:hidden transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          <aside className={`fixed top-0 left-0 bottom-0 w-72 bg-[#05100a] backdrop-blur-xl border-r border-white/5 z-[70] lg:hidden transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
              <SidebarContent currentRole={currentRole} closeMenu={() => setIsMobileMenuOpen(false)} />
           </aside>
         </>
       )}
       <main className="flex-1 flex flex-col min-w-0 relative">
-        {hasWorkspaceHeader && (
+        {!isLandingOrLogin && (
           <>
             <WorkspaceHeader onMobileMenuToggle={() => setIsMobileMenuOpen(true)} />
             <SettingsIncompleteAlert />
           </>
         )}
-        <div className="flex-1">
+        <div className="flex-1 overflow-x-hidden">
           {children}
         </div>
       </main>
@@ -336,9 +381,11 @@ const App = () => {
           <Route path="/audit/report/:id" element={<AuditReportPage />} />
           <Route path="/certificate/:id" element={<CertificatePage />} />
           <Route path="/members" element={<MembersPage />} />
+          <Route path="/build" element={<BuildPage />} />
           <Route path="/tests/run/:id" element={<TestExecutionPage />} />
           <Route path="/credits" element={<CreditDashboard />} />
           <Route path="/fix-workspace" element={<FixWorkspacePage />} />
+          <Route path="/hub" element={<CommunityHub />} />
           <Route path="/settings" element={<Navigate to="/settings/profile" replace />} />
           <Route path="/settings" element={<SettingsLayout />}>
             <Route path="profile" element={<ProfilePage />} />
