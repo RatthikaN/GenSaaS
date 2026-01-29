@@ -127,6 +127,7 @@ const SidebarContent = ({ currentRole, closeMenu }: { currentRole: UserRole, clo
     { name: 'Account', path: '/settings/account', icon: 'account_balance' },
     { name: 'Credits', path: '/credits', icon: 'bolt' },
     { name: 'Security', path: '/settings/security', icon: 'security' },
+    { name: 'Notifications', path: '/settings/notifications', icon: 'notifications' },
   ];
 
   const filteredItems = navItems.filter(item => item.roles.includes(currentRole));
@@ -195,6 +196,19 @@ const SidebarContent = ({ currentRole, closeMenu }: { currentRole: UserRole, clo
             </div>
           </div>
         </nav>
+      </div>
+
+      <div className="mt-auto pt-6 border-t border-white/10">
+        <Link 
+          to="/login" 
+          onClick={closeMenu}
+          className="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-red-400/70 hover:bg-red-500/10 hover:text-red-400 border border-transparent hover:border-red-500/20 transition-all group shadow-sm active:scale-95"
+        >
+          <div className="size-8 rounded-lg bg-red-500/5 flex items-center justify-center group-hover:bg-red-500/20 transition-all">
+            <span className="material-symbols-outlined text-[18px] group-hover:rotate-12 transition-transform">logout</span>
+          </div>
+          <span className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.15em]">Sign Out</span>
+        </Link>
       </div>
     </div>
   );
